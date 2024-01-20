@@ -9,11 +9,6 @@ import SwiftUI
 
 struct MainView: View {
 
-    init() {
-        // 탭 뷰의 배경색을 설정
-        UITabBar.appearance().backgroundColor = UIColor(named: "BackGroundColor")
-    }
-
     var body: some View {
         
         TabView {
@@ -36,8 +31,11 @@ struct MainView: View {
                 }
         }
         .background(Color("BackGroundColor"))
+        .accentColor(Color("TabBarIconColor"))
+
     }
 }
+
 
 
 struct MainView_Previews: PreviewProvider {

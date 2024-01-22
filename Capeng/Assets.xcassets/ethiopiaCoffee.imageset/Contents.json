@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "DALL·E 2024-01-22 16.02.09 - Create an illustration of a coffee bean character embodying the origin and flavor profile of an Ethiopian Arabica coffee bean, with floral notes. The .png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

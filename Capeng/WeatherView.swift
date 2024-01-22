@@ -37,7 +37,7 @@ struct WeatherView: View {
 
                         }
 
-                        CardView(title: "오늘의 커피 추천", content: "오늘은 어떤 커피를 마실까요?")
+                        CoffeeBeanRecommendation(viewModel: weatherViewModel) // 수정됨
                         CardView(title: "오늘의 명언", content: "하루를 시작하는 좋은 말.")
                     }
                     .padding()
@@ -80,21 +80,86 @@ struct CardView: View {
     }
 }
 
+struct CoffeeBeanRecommendation: View {
+    @ObservedObject var viewModel: WeatherViewModel
+
+    var body: some View {
+        TabView {
+            ForEach(viewModel.recommendedCoffeeBeans, id: \.origin) { coffeeBean in
+                CoffeeBeanCard(coffeeBean: coffeeBean)
+                    .frame(width: 300, height: 200) // 카드 크기 지정
+                    .foregroundColor(Color("TextColorSet"))
+                    .cornerRadius(20)
+                    .shadow(color: Color.black.opacity(0.3), radius: 10)
+            }
+        }
+        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)) // 인디케이터 제거
+        .frame(height: 240) // TabView 높이 지정
+    }
+}
+
+
+
+struct CoffeeBeanCard: View {
+    var coffeeBean: CoffeeBean
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text("날씨와 원두")
+                    .padding(.bottom)
+                Text(coffeeBean.origin)
+                    .font(.title)
+                    .fontWeight(.medium)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Text(coffeeBean.type)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Text(coffeeBean.description)
+                    .font(.body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            Spacer() // 텍스트와 이미지 사이의 간격을 조정
+
+            Image(coffeeBean.imageName) // 이미지 파일명을 사용하여 이미지 표시
+                .resizable()
+                .scaledToFit()
+                .frame(width: 120, height: 120) // 이미지 크기 조정
+        }
+        .padding()
+        .frame(width: 300, height: 200)
+        .background(
+            LinearGradient(gradient: Gradient(colors: [Color("CardViewColor"), Color.gray]), startPoint: .topLeading, endPoint: .bottomTrailing)
+        )
+        .cornerRadius(20)
+        .shadow(color: Color.black.opacity(0.3), radius: 10)
+        .foregroundColor(.white)
+    }
+}
+
+
+
+
+
+
 struct CoffeeRecommendationCardView: View {
     @ObservedObject var viewModel: WeatherViewModel
 
     var body: some View {
         // 그라데이션 색상 정의
         let gradient = LinearGradient(
-            gradient: Gradient(colors: [Color(hex: "#602B06"), Color(hex: "#602B06").opacity(0.7)]),
-            startPoint: .top,
-            endPoint: .bottom
+            gradient: Gradient(colors: [Color(hex: "#602B06"), Color(hex: "#602B06").opacity(0.5)]),
+            startPoint: .leading,
+            endPoint: .trailing
         )
 
         return RoundedRectangle(cornerRadius: 20)
             .fill(gradient) // 그라데이션 적용
             .frame(width: 150, height: 200)
-            .shadow(color: Color.black.opacity(0.3), radius: 10)
+            .shadow(color: Color.black.opacity(0.5), radius: 10)
             .overlay(
                 VStack(alignment: .leading) {
                     Text("오늘의 커피")
@@ -140,38 +205,36 @@ struct WeatherCardView: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
-            .fill(viewModel.cardBackgroundGradient) // 그라데이션 배경색 사용
+            .fill(viewModel.cardBackgroundGradient) // 커스텀 그라디언트 사용
             .frame(width: 150, height: 200)
             .shadow(color: Color.black.opacity(0.3), radius: 10)
             .overlay(
                 VStack(alignment: .leading) {
-                    // 지역 이름
                     if let cityName = viewModel.weatherData?.cityName {
                         Text(cityName)
-                            .font(.title2) // 폰트 크기 조정
-                            .fontWeight(.medium) // 굵기 조정
+                            .font(.title2)
+                            .fontWeight(.medium)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom)
                     }
 
-                    // 온도
                     Text("\(Int(viewModel.weatherData?.temperature ?? 0))°C")
-                        .font(.largeTitle) // 폰트 크기 조정
-                        .fontWeight(.bold) // 굵기 조정
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                    // 습도
                     Text("\(Int(viewModel.weatherData?.humidity ?? 0))%")
-                        .font(.largeTitle) // 폰트 크기 조정
-                        .fontWeight(.bold) // 굵기 조정
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                    .foregroundColor(.white)
-                    .padding()
+                .foregroundColor(.white)
+                .padding()
             )
             .padding([.horizontal, .bottom])
     }
 }
+
 
 
 
@@ -254,15 +317,46 @@ class WeatherViewModel: ObservableObject {
             endColor = Color.red.opacity(0.5)
         }
 
-        return LinearGradient(gradient: Gradient(colors: [startColor, endColor]), startPoint: .top, endPoint: .bottom)
+        return LinearGradient(gradient: Gradient(colors: [startColor, endColor]), startPoint: .leading, endPoint: .trailing)
     }
+
+    // 온도에 따른 원두 추천
+    var recommendedCoffeeBeans: [CoffeeBean] {
+        guard let temperature = weatherData?.temperature else { return [] }
+
+        switch temperature {
+        case ..<10:
+            return [
+                CoffeeBean(origin: "에티오피아", type: "아라비카", description: "플로럴한 향미", imageName: "ethiopiaCoffee"),
+                CoffeeBean(origin: "케냐", type: "SL28", description: "강렬한 산미와 과일 향미", imageName: "kenyaCoffee"),
+                CoffeeBean(origin: "예멘", type: "모카", description: "진한 몸매와 복합적인 맛", imageName: "yemenCoffee"),
+                CoffeeBean(origin: "르완다", type: "부르봉", description: "달콤한 베리류의 향미", imageName: "rwandaCoffee")
+            ]
+        case 10..<20:
+            return [
+                CoffeeBean(origin: "브라질", type: "부르봉", description: "초콜릿과 견과류 향미", imageName: "brazilCoffee"),
+                CoffeeBean(origin: "콜롬비아", type: "카투라", description: "밝은 산미와 달콤함", imageName: "colombiaCoffee"),
+                CoffeeBean(origin: "과테말라", type: "아라비카", description: "균형 잡힌 산미와 풍부한 향미", imageName: "guatemalaCoffee"),
+                CoffeeBean(origin: "인도네시아", type: "만델링", description: "흙 내음과 무거운 몸매", imageName: "indonesiaCoffee")
+            ]
+        default:
+            return [
+                CoffeeBean(origin: "베트남", type: "로부스타", description: "강한 바디감과 떫은 맛", imageName: "vietnamCoffee"),
+                CoffeeBean(origin: "인도", type: "몬순", description: "독특한 맛과 향의 조화", imageName: "indiaCoffee"),
+                CoffeeBean(origin: "하와이", type: "코나", description: "부드러운 몸매와 감미로운 맛", imageName: "hawaiiCoffee"),
+                CoffeeBean(origin: "자메이카", type: "블루마운틴", description: "매끄러운 몸매와 깔끔한 마무리", imageName: "jamaicaCoffee")
+            ]
+        }
+    }
+
+
 
 
     init(isPreview: Bool = false) {
         self.isPreview = isPreview
         if isPreview {
             // 프리뷰를 위한 고정된 위치 정보 사용
-            let fixedLocation = CLLocation(latitude: 37.5665, longitude: 126.9780) // 서울의 위도와 경도
+            let fixedLocation = CLLocation(latitude: 18.0195, longitude: -76.7795) // 자메이카 밥 말리 박물관
             self.fetchWeatherData(for: fixedLocation)
         } else {
             locationManager.weatherViewModel = self
@@ -360,4 +454,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("위치 정보를 가져오는데 실패했습니다: \(error.localizedDescription)")
     }
+}
+
+
+struct CoffeeBean {
+    var origin: String
+    var type: String
+    var description: String
+    var imageName: String // 이미지 파일명을 저장하는 속성
 }

@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "DALL·E 2024-01-22 16.17.29 - Illustrate a coffee bean character that captures the essence of an Indian Monsoon coffee bean, characterized by its unique flavor and aroma balance. T.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -15,19 +15,19 @@ struct MainView: View {
             WeatherView()
                 .tabItem {
                     Image(systemName: "cloud.sun.fill")
-                    Text("날씨")
+                    Text("Today")
                 }
 
             RecipeView()
                 .tabItem {
                     Image(systemName: "cup.and.saucer.fill")
-                    Text("레시피")
+                    Text("Recipe")
                 }
 
             CafeReviewView()
                 .tabItem {
                     Image(systemName: "list.clipboard")
-                    Text("카페 다이어리")
+                    Text("Cafe Diary")
                 }
         }
         .background(Color("BackGroundColor"))

@@ -24,11 +24,11 @@ struct MainView: View {
                     Text("Recipe")
                 }
 
-            CafeReviewView()
-                .tabItem {
-                    Image(systemName: "list.clipboard")
-                    Text("Cafe Diary")
-                }
+//            CafeReviewView()
+//                .tabItem {
+//                    Image(systemName: "list.clipboard")
+//                    Text("Cafe Diary")
+//                }
         }
         .background(Color("BackGroundColor"))
         .accentColor(Color("TabBarIconColor"))

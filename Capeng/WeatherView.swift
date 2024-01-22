@@ -13,6 +13,7 @@ struct WeatherView: View {
     @State private var currentDate = Date()
     @ObservedObject private var weatherViewModel = WeatherViewModel()
 
+
     init(weatherViewModel: WeatherViewModel = WeatherViewModel()) {
         self.weatherViewModel = weatherViewModel
     }
@@ -31,14 +32,18 @@ struct WeatherView: View {
 
                 ScrollView {
                     VStack(alignment: .leading) {
-                        HStack{
+                        HStack {
                             WeatherCardView(viewModel: weatherViewModel)
                             CoffeeRecommendationCardView(viewModel: weatherViewModel)
-
                         }
 
-                        CoffeeBeanRecommendation(viewModel: weatherViewModel) // 수정됨
-                        CardView(title: "오늘의 명언", content: "하루를 시작하는 좋은 말.")
+                        CoffeeBeanRecommendation(viewModel: weatherViewModel)
+
+                        // QuoteView 추가
+                        QuoteView(viewModel: weatherViewModel.quoteViewModel)
+                            .onAppear {
+                                weatherViewModel.loadQuote()
+                            }
                     }
                     .padding()
                 }
@@ -53,32 +58,54 @@ struct WeatherView: View {
     }
 }
 
-struct CardView: View {
-    var title: String
-    var content: String
+class QuoteViewModel: ObservableObject {
+    @Published var advice: String = ""
+    private var adviceService = AdviceService()
+
+    func loadAdvice() {
+        adviceService.fetchRandomAdvice { [weak self] adviceSlip in
+            DispatchQueue.main.async {
+                self?.advice = adviceSlip?.slip.advice ?? "No advice found"
+            }
+        }
+    }
+
+}
+
+struct QuoteView: View {
+    @ObservedObject var viewModel: QuoteViewModel
 
     var body: some View {
         RoundedRectangle(cornerRadius: 20)
-            .fill(Color.white)
-            .frame(height: 100)
+            .fill(
+                LinearGradient(
+                    gradient: Gradient(colors: [Color("QuoteColor"), Color("QuoteColor").opacity(0.7)]),
+                    startPoint: .bottomLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .frame(height: 150)
             .shadow(color: Color.black.opacity(0.3), radius: 10)
             .overlay(
-                VStack {
-                    Text(title)
+                VStack(alignment: .leading) { // VStack을 왼쪽 정렬로 설정
+                    Text("오늘의 명언")
                         .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading) // 텍스트를 왼쪽 정렬
+                        .padding(.leading)
                         .padding(.top)
-                        .foregroundColor(.black)
-
-                    Text(content)
+                    Text(viewModel.advice)
                         .font(.body)
-                        .padding(.bottom)
-                        .foregroundColor(.black)
-
+                        .padding()
+                        .multilineTextAlignment(.center)
                 }
+                    .foregroundColor(.white)
             )
             .padding([.horizontal, .bottom])
     }
 }
+
+
+
 
 struct CoffeeBeanRecommendation: View {
     @ObservedObject var viewModel: WeatherViewModel
@@ -128,6 +155,8 @@ struct CoffeeBeanCard: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 120, height: 120) // 이미지 크기 조정
+                .cornerRadius(20)
+
         }
         .padding()
         .frame(width: 300, height: 200)
@@ -228,8 +257,8 @@ struct WeatherCardView: View {
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .foregroundColor(.white)
-                .padding()
+                    .foregroundColor(.white)
+                    .padding()
             )
             .padding([.horizontal, .bottom])
     }
@@ -271,6 +300,9 @@ struct WeatherData {
 class WeatherViewModel: ObservableObject {
     @Published var weatherData: WeatherData?
     private var locationManager = LocationManager()
+    @Published var quoteViewModel = QuoteViewModel()
+
+
     private let apiKey = "6b2a1e19c8fdb59ce8b102e4949644f4"
     var isPreview: Bool // 프리뷰 모드를 위한 플래그
 
@@ -337,14 +369,14 @@ class WeatherViewModel: ObservableObject {
                 CoffeeBean(origin: "브라질", type: "부르봉", description: "초콜릿과 견과류 향미", imageName: "brazilCoffee"),
                 CoffeeBean(origin: "콜롬비아", type: "카투라", description: "밝은 산미와 달콤함", imageName: "colombiaCoffee"),
                 CoffeeBean(origin: "과테말라", type: "아라비카", description: "균형 잡힌 산미와 풍부한 향미", imageName: "guatemalaCoffee"),
-                CoffeeBean(origin: "인도네시아", type: "만델링", description: "흙 내음과 무거운 몸매", imageName: "indonesiaCoffee")
+                CoffeeBean(origin: "인도네시아", type: "만델링", description: "흙 내음과 무거운 바디", imageName: "indonesiaCoffee")
             ]
         default:
             return [
                 CoffeeBean(origin: "베트남", type: "로부스타", description: "강한 바디감과 떫은 맛", imageName: "vietnamCoffee"),
                 CoffeeBean(origin: "인도", type: "몬순", description: "독특한 맛과 향의 조화", imageName: "indiaCoffee"),
-                CoffeeBean(origin: "하와이", type: "코나", description: "부드러운 몸매와 감미로운 맛", imageName: "hawaiiCoffee"),
-                CoffeeBean(origin: "자메이카", type: "블루마운틴", description: "매끄러운 몸매와 깔끔한 마무리", imageName: "jamaicaCoffee")
+                CoffeeBean(origin: "하와이", type: "코나", description: "부드러운 바디감과 감미로운 맛", imageName: "hawaiiCoffee"),
+                CoffeeBean(origin: "자메이카", type: "블루마운틴", description: "매끄러운 바디감과 깔끔한 마무리", imageName: "jamaicaCoffee")
             ]
         }
     }
@@ -364,7 +396,9 @@ class WeatherViewModel: ObservableObject {
         }
     }
 
-
+    func loadQuote() {
+        quoteViewModel.loadAdvice()
+    }
 
     func fetchWeatherData() {
         guard !isPreview, let location = locationManager.currentLocation else {
@@ -417,6 +451,31 @@ class WeatherViewModel: ObservableObject {
     }
 }
 
+class AdviceService {
+    func fetchRandomAdvice(completion: @escaping (AdviceSlip?) -> Void) {
+        guard let url = URL(string: "https://api.adviceslip.com/advice") else {
+            completion(nil)
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else {
+                print("Error fetching data: \(error?.localizedDescription ?? "Unknown error")")
+                completion(nil)
+                return
+            }
+
+            do {
+                let adviceSlip = try JSONDecoder().decode(AdviceSlip.self, from: data)
+                completion(adviceSlip)
+            } catch {
+                print("JSON decoding error: \(error.localizedDescription)")
+                completion(nil)
+            }
+        }.resume()
+    }
+}
+
 
 
 
@@ -463,3 +522,14 @@ struct CoffeeBean {
     var description: String
     var imageName: String // 이미지 파일명을 저장하는 속성
 }
+
+
+struct AdviceSlip: Codable {
+    let slip: Slip
+}
+
+struct Slip: Codable {
+    let id: Int
+    let advice: String
+}
+

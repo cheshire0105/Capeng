@@ -218,6 +218,9 @@ struct RecipeTimerView: View {
     @State private var timers = [TimerData(title: "1차 추출", secondsElapsed: 0, timerRunning: false),
                                  TimerData(title: "뜸 들이기", secondsElapsed: 0, timerRunning: false)]
     @State private var showingActionSheet = false
+    @State private var navigateToExtractionCompleted = false
+    @State private var totalTime = 0 // 총 추출 시간을 저장하는 상태 변수
+
 
     var body: some View {
         ScrollView {
@@ -250,6 +253,19 @@ struct RecipeTimerView: View {
             .padding([.horizontal, .bottom])
         }
         .background(Color("BackGroundColor").edgesIgnoringSafeArea(.all))
+        .navigationBarItems(trailing: Button("추출 완료") {
+            totalTime = calculateTotalTime()
+            navigateToExtractionCompleted = true
+        })
+        .background(
+            NavigationLink(destination: ExtractionCompletedView(totalTime: totalTime), isActive: $navigateToExtractionCompleted) {
+                EmptyView()
+            }
+        )
+    }
+
+    func calculateTotalTime() -> Int {
+        timers.reduce(0) { $0 + $1.secondsElapsed }
     }
 
 
@@ -272,6 +288,24 @@ struct RecipeTimerView: View {
     }
 }
 
+struct ExtractionCompletedView: View {
+    let totalTime: Int
+
+    var body: some View {
+        VStack {
+            Text("추출 완료!")
+                .font(.largeTitle)
+            Text("총 추출 시간: \(timeString(from: totalTime))")
+                .font(.title)
+        }
+    }
+
+    func timeString(from totalSeconds: Int) -> String {
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+}
 
 struct TimerCardView: View {
     @ObservedObject var timerData: TimerData

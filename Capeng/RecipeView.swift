@@ -217,6 +217,7 @@ import SwiftUI
 struct RecipeTimerView: View {
     @State private var timers = [TimerData(title: "1차 추출", secondsElapsed: 0, timerRunning: false),
                                  TimerData(title: "뜸 들이기", secondsElapsed: 0, timerRunning: false)]
+    @State private var showingActionSheet = false
 
     var body: some View {
         ScrollView {
@@ -226,23 +227,51 @@ struct RecipeTimerView: View {
                     TimerCardView(timerData: timers[index])
                 }
 
-                Button(action: addTimer) {
+                Button(action: {
+                    showingActionSheet = true
+                }) {
                     Image(systemName: "plus.circle.fill")
                         .resizable()
                         .frame(width: 50, height: 50)
                         .foregroundColor(.blue)
                 }
-                .padding(.top)
+                .padding([.top, .leading, .trailing])
+                .actionSheet(isPresented: $showingActionSheet) {
+                    ActionSheet(
+                        title: Text("타이머 추가"),
+                        buttons: [
+                            .default(Text("뜸 들이기")) { addBloomingTimer() },
+                            .default(Text("추가 추출")) { addExtractionTimer() },
+                            .cancel()
+                        ]
+                    )
+                }
             }
             .padding([.horizontal, .bottom])
         }
         .background(Color("BackGroundColor").edgesIgnoringSafeArea(.all))
     }
 
-    func addTimer() {
-        timers.append(TimerData(title: "새 타이머", secondsElapsed: 0, timerRunning: false))
+
+    func addBloomingTimer() {
+        timers.append(TimerData(title: "뜸 들이기", secondsElapsed: 0, timerRunning: false))
+    }
+
+    func addExtractionTimer() {
+        let nextExtractionNumber = getNextExtractionNumber()
+        timers.append(TimerData(title: "\(nextExtractionNumber)차 추출", secondsElapsed: 0, timerRunning: false))
+    }
+
+    func getNextExtractionNumber() -> Int {
+        let extractionTimers = timers.filter { $0.title.contains("차 추출") }
+        let lastNumber = extractionTimers.compactMap { timer -> Int? in
+            let parts = timer.title.split(separator: "차")
+            return Int(parts.first ?? "")
+        }.max() ?? 0
+        return lastNumber + 1
     }
 }
+
 
 struct TimerCardView: View {
     @ObservedObject var timerData: TimerData

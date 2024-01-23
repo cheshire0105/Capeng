@@ -292,11 +292,18 @@ struct ExtractionCompletedView: View {
     let totalTime: Int
 
     var body: some View {
-        VStack {
-            Text("추출 완료!")
-                .font(.largeTitle)
-            Text("총 추출 시간: \(timeString(from: totalTime))")
-                .font(.title)
+        ZStack {
+            Color("BackGroundColor").edgesIgnoringSafeArea(.all)
+
+            ScrollView {
+                Spacer()
+                VStack {
+                    Text("추출 완료!")
+                        .font(.largeTitle)
+                    Text("총 추출 시간: \(timeString(from: totalTime))")
+                        .font(.title)
+                }
+            }
         }
     }
 
@@ -306,6 +313,14 @@ struct ExtractionCompletedView: View {
         return String(format: "%02d:%02d", minutes, seconds)
     }
 }
+
+
+struct ExtractionCompletedView_Previews: PreviewProvider {
+    static var previews: some View {
+        ExtractionCompletedView(totalTime: 13)
+    }
+}
+
 
 struct TimerCardView: View {
     @ObservedObject var timerData: TimerData

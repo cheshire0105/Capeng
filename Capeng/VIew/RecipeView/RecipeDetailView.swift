@@ -58,13 +58,16 @@ struct RecipeDetailView: View {
                     placeholder: "원두 용량 (g)",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
-                    textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
+                    textColor: UIColor(Color("recipeTextColor")), // 텍스트 색상 지정
+                    keyboardType: .numberPad // 숫자 키보드 지정
+
                 )
                 .padding()
                 .background(Color.white)
                 .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.1), radius: 5)
                 .padding(.horizontal)
+                
 
 
 
@@ -72,7 +75,9 @@ struct RecipeDetailView: View {
                     placeholder: "물 용량 (ml)",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
-                    textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
+                    textColor: UIColor(Color("recipeTextColor")), // 텍스트 색상 지정
+                    keyboardType: .numberPad // 숫자 키보드 지정
+
                 )
                 .padding()
                 .background(Color.white)
@@ -86,7 +91,9 @@ struct RecipeDetailView: View {
                     placeholder: "물 온도 (°C)",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
-                    textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
+                    textColor: UIColor(Color("recipeTextColor")), // 텍스트 색상 지정
+                    keyboardType: .numberPad // 숫자 키보드 지정
+
                 )
                 .padding()
                 .background(Color.white)
@@ -161,6 +168,8 @@ struct CustomTextField: UIViewRepresentable {
     @Binding var text: String
     var placeholderColor: UIColor
     var textColor: UIColor
+    var keyboardType: UIKeyboardType = .default
+
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
@@ -169,8 +178,10 @@ struct CustomTextField: UIViewRepresentable {
             attributes: [NSAttributedString.Key.foregroundColor: placeholderColor]
         )
         textField.textColor = textColor
+        textField.keyboardType = keyboardType 
         return textField
     }
+
 
     func updateUIView(_ uiView: UITextField, context: Context) {
         uiView.text = text

@@ -178,7 +178,7 @@ struct CustomTextField: UIViewRepresentable {
             attributes: [NSAttributedString.Key.foregroundColor: placeholderColor]
         )
         textField.textColor = textColor
-        textField.keyboardType = keyboardType 
+        textField.keyboardType = keyboardType
         return textField
     }
 

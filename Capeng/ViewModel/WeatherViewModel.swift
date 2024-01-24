@@ -16,11 +16,11 @@ class WeatherViewModel: ObservableObject {
 
 
     private var apiKey: String {
-           guard let apiKey = Bundle.main.object(forInfoDictionaryKey: "API_KEY") as? String else {
-               fatalError("API_KEY not found in Info.plist")
-           }
-           return apiKey
-       }
+        guard let apiKey = Bundle.main.object(forInfoDictionaryKey: "API_KEY") as? String else {
+            fatalError("API_KEY not found in Info.plist")
+        }
+        return apiKey
+    }
 
     var isPreview: Bool // 프리뷰 모드를 위한 플래그
 

@@ -9,6 +9,7 @@ import Foundation
 
 class AdviceService {
     func fetchRandomAdvice(completion: @escaping (AdviceSlip?) -> Void) {
+
         guard let url = URL(string: "https://api.adviceslip.com/advice") else {
             completion(nil)
             return

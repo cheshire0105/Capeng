@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ExtractionCompletedView: View {
+    
     let totalTime: Int
     @State private var extractionVolume: String = ""
     @State private var coffeeTasteNotes: String = ""

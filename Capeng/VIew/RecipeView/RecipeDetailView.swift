@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct RecipeDetailView: View {
+
     @State private var recipeName: String = ""
     @State private var coffeeName: String = ""
     @State private var coffeeAmount: String = ""

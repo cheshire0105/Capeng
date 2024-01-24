@@ -6,7 +6,6 @@
 //
 
 import Foundation
-// 타이머 뷰
 import SwiftUI
 
 struct RecipeTimerView: View {

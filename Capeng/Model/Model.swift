@@ -41,3 +41,36 @@ struct WeatherData {
     let cityName: String // 지역 이름
 }
 
+
+class TimerData: ObservableObject {
+    var title: String
+    @Published var secondsElapsed: Int
+    @Published var timerRunning: Bool
+
+    private var timer: Timer?
+
+    init(title: String, secondsElapsed: Int, timerRunning: Bool) {
+        self.title = title
+        self.secondsElapsed = secondsElapsed
+        self.timerRunning = timerRunning
+    }
+
+    func startTimer() {
+        timerRunning = true
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            self?.secondsElapsed += 1
+        }
+    }
+
+    func stopTimer() {
+        timerRunning = false
+        timer?.invalidate()
+        timer = nil
+    }
+
+    func resetTimer() {
+        stopTimer()
+        secondsElapsed = 0
+    }
+}
+

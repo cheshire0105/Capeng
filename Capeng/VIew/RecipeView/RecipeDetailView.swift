@@ -29,7 +29,7 @@ struct RecipeDetailView: View {
                 Spacer()
 
                 CustomTextField(
-                    placeholder: "레시피 이름을 정해주세요!",
+                    placeholder: "Enter the recipe name",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
@@ -42,7 +42,7 @@ struct RecipeDetailView: View {
 
                 // 원두 이름 입력
                 CustomTextField(
-                    placeholder: "원두 이름",
+                    placeholder: "Name of the coffee beans",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
@@ -55,7 +55,7 @@ struct RecipeDetailView: View {
 
                 // 원두 용량 입력
                 CustomTextField(
-                    placeholder: "원두 용량 (g)",
+                    placeholder: "Amount of coffee beans (g)",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")), // 텍스트 색상 지정
@@ -72,7 +72,7 @@ struct RecipeDetailView: View {
 
 
                 CustomTextField(
-                    placeholder: "물 용량 (ml)",
+                    placeholder: "Amount of water (ml)",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")), // 텍스트 색상 지정
@@ -88,7 +88,7 @@ struct RecipeDetailView: View {
 
 
                 CustomTextField(
-                    placeholder: "물 온도 (°C)",
+                    placeholder: "Water temperature (°C)",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")), // 텍스트 색상 지정
@@ -102,7 +102,7 @@ struct RecipeDetailView: View {
                 .padding(.horizontal)
 
                 CustomTextField(
-                    placeholder: "로스팅",
+                    placeholder: "Type of roasting",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
@@ -113,7 +113,7 @@ struct RecipeDetailView: View {
                 .shadow(color: Color.black.opacity(0.1), radius: 5)
                 .padding(.horizontal)
                 CustomTextField(
-                    placeholder: "분쇄도",
+                    placeholder: "Grind size",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
@@ -124,7 +124,7 @@ struct RecipeDetailView: View {
                 .shadow(color: Color.black.opacity(0.1), radius: 5)
                 .padding(.horizontal)
                 CustomTextField(
-                    placeholder: "드리퍼",
+                    placeholder: "Type of dripper",
                     text: $recipeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정

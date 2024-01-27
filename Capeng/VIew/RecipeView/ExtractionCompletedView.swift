@@ -7,12 +7,15 @@
 
 import Foundation
 import SwiftUI
+import PhotosUI // 사진 라이브러리 접근을 위해 필요
 
 struct ExtractionCompletedView: View {
-    
+
     let totalTime: Int
     @State private var extractionVolume: String = ""
     @State private var coffeeTasteNotes: String = ""
+    @State private var isImagePickerPresented: Bool = false // 이미지 피커 상태
+    @State private var selectedImage: UIImage? // 선택된 이미지
 
     var body: some View {
         ZStack {
@@ -22,49 +25,66 @@ struct ExtractionCompletedView: View {
                 VStack(spacing: 20) {
                     CardView {
                         VStack {
-                            Text("커피가 완성 되었습니다!")
+                            Text("Coffee is ready!")
                                 .font(.title)
-                                .foregroundColor(Color("TextColorSet")) // 여기서 텍스트 색상을 변경
+                                .foregroundColor(Color("TextColorSet"))
 
-                            Text("추출 시간은 \(timeString(from: totalTime)) 입니다.")
+                            Text("Extraction time : \(timeString(from: totalTime))")
                                 .font(.title3)
-                                .foregroundColor(Color("TextColorSet")) // 여기서 텍스트 색상을 변경
+                                .foregroundColor(Color("TextColorSet"))
                         }
                         .padding()
-                    }
+                        .frame(maxWidth: .infinity) // 텍스트 필드와 같은 가로 크기로 설정
 
 
-                    CardView {
-                        CustomTextField(
-                            placeholder: "추출 완료 용량 (ml)",
-                            text: $extractionVolume,
-                            placeholderColor: UIColor(Color("placeholderColor")),
-                            textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
-                        )
-                        .padding()
-                    }
 
-                    CardView {
-                        CustomTextField(
-                            placeholder: "어떤 커피였나요?",
-                            text: $coffeeTasteNotes,
-                            placeholderColor: UIColor(Color("placeholderColor")),
-                            textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
-                        )
-                        .padding()
+                        Image("penguincamera")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 200, height: 200)
+                            .cornerRadius(14) // 모서리 둥글기
+
                     }
+                    .padding()
                 }
+
+
+
+
+                CustomTextField(
+                    placeholder: "Final extraction volume (ml)",
+                    text: $extractionVolume,
+                    placeholderColor: UIColor(Color("placeholderColor")),
+                    textColor: UIColor(Color("recipeTextColor"))
+                )
                 .padding()
+                .background(Color.white)
+                .cornerRadius(10)
+                .shadow(color: Color.black.opacity(0.1), radius: 5)
+                .padding(.horizontal)
+
+                CustomTextField(
+                    placeholder: "How was the coffee?",
+                    text: $coffeeTasteNotes,
+                    placeholderColor: UIColor(Color("placeholderColor")),
+                    textColor: UIColor(Color("recipeTextColor"))
+                )
+                .padding()
+                .background(Color.white)
+                .cornerRadius(10)
+                .shadow(color: Color.black.opacity(0.1), radius: 5)
+                .padding(.horizontal)
             }
+            .padding()
         }
     }
-
-    func timeString(from totalSeconds: Int) -> String {
-        let minutes = (totalSeconds % 3600) / 60
-        let seconds = totalSeconds % 60
-        return String(format: "%02d:%02d", minutes, seconds)
-    }
 }
+func timeString(from totalSeconds: Int) -> String {
+    let minutes = (totalSeconds % 3600) / 60
+    let seconds = totalSeconds % 60
+    return String(format: "%02d:%02d", minutes, seconds)
+}
+
 
 struct CardView<Content: View>: View {
     let content: Content

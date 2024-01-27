@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct RecipeTimerView: View {
-    @State private var timers = [TimerData(title: "1차 추출", secondsElapsed: 0, timerRunning: false),
-                                 TimerData(title: "뜸 들이기", secondsElapsed: 0, timerRunning: false)]
+    @State private var timers = [TimerData(title: "First Extraction", secondsElapsed: 0, timerRunning: false),
+                                 TimerData(title: "Blooming", secondsElapsed: 0, timerRunning: false)]
     @State private var showingActionSheet = false
     @State private var navigateToExtractionCompleted = false
     @State private var totalTime = 0 // 총 추출 시간을 저장하는 상태 변수
@@ -18,6 +18,7 @@ struct RecipeTimerView: View {
 
     var body: some View {
         ScrollView {
+            
             Spacer()
             VStack(spacing: 20) {
                 ForEach(timers.indices, id: \.self) { index in
@@ -35,19 +36,20 @@ struct RecipeTimerView: View {
                 .padding([.top, .leading, .trailing])
                 .actionSheet(isPresented: $showingActionSheet) {
                     ActionSheet(
-                        title: Text("타이머 추가"),
+                        title: Text("Add Timer"),
                         buttons: [
-                            .default(Text("뜸 들이기")) { addBloomingTimer() },
-                            .default(Text("추가 추출")) { addExtractionTimer() },
+                            .default(Text("Blooming")) { addBloomingTimer() },
+                                                        .default(Text("Additional Extraction")) { addExtractionTimer() },
                             .cancel()
                         ]
                     )
                 }
+                
             }
             .padding([.horizontal, .bottom])
         }
         .background(Color("BackGroundColor").edgesIgnoringSafeArea(.all))
-        .navigationBarItems(trailing: Button("추출 완료") {
+        .navigationBarItems(trailing: Button("Complete Extraction") {
             totalTime = calculateTotalTime()
             navigateToExtractionCompleted = true
         })
@@ -64,21 +66,42 @@ struct RecipeTimerView: View {
 
 
     func addBloomingTimer() {
-        timers.append(TimerData(title: "뜸 들이기", secondsElapsed: 0, timerRunning: false))
-    }
+         timers.append(TimerData(title: "Blooming", secondsElapsed: 0, timerRunning: false))
+     }
 
     func addExtractionTimer() {
         let nextExtractionNumber = getNextExtractionNumber()
-        timers.append(TimerData(title: "\(nextExtractionNumber)차 추출", secondsElapsed: 0, timerRunning: false))
+        timers.append(TimerData(title: "\(ordinalString(from: nextExtractionNumber)) Extraction", secondsElapsed: 0, timerRunning: false))
     }
 
     func getNextExtractionNumber() -> Int {
-        let extractionTimers = timers.filter { $0.title.contains("차 추출") }
+        let extractionTimers = timers.filter { $0.title.contains("Extraction") }
         let lastNumber = extractionTimers.compactMap { timer -> Int? in
-            let parts = timer.title.split(separator: "차")
-            return Int(parts.first ?? "")
+            let parts = timer.title.split(separator: " ")
+            if parts.count > 1, let ordinal = parts.first {
+                return ordinalNumber(from: ordinal)
+            }
+            return nil
         }.max() ?? 0
         return lastNumber + 1
+    }
+
+    func ordinalString(from number: Int) -> String {
+        switch number {
+        case 1: return "First"
+        case 2: return "Second"
+        case 3: return "Third"
+        default: return "\(number)th"
+        }
+    }
+
+    func ordinalNumber(from ordinal: Substring) -> Int? {
+        switch ordinal {
+        case "First": return 1
+        case "Second": return 2
+        case "Third": return 3
+        default: return Int(ordinal.dropLast(2)) // "4th", "5th", etc.
+        }
     }
 }
 
@@ -98,19 +121,26 @@ struct TimerCardView: View {
                 .padding()
 
             HStack {
-                Button("시작") {
+                Spacer()
+                Button("Start") {
                     timerData.startTimer()
                 }
                 .disabled(timerData.timerRunning)
 
-                Button("정지") {
+                Spacer()
+
+                Button("Stop") {
                     timerData.stopTimer()
                 }
                 .disabled(!timerData.timerRunning)
 
-                Button("리셋") {
+                Spacer()
+
+                Button("Reset") {
                     timerData.resetTimer()
                 }
+
+                Spacer()
             }
         }
         .padding()

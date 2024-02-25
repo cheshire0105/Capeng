@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import PhotosUI // 사진 라이브러리 접근을 위해 필요
 
 struct ExtractionCompletedView: View {
 

@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct CapengApp: App {
+    let persistenceController = PersistenceController.shared
     @State private var isShowingLaunchScreen = true
 
     var body: some Scene {
@@ -21,9 +22,9 @@ struct CapengApp: App {
                         }
                     }
             } else {
-                MainView() // 메인 화면으로 전환
+                MainView()
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext) // 메인 뷰에 managedObjectContext 주입
             }
         }
     }
 }
-

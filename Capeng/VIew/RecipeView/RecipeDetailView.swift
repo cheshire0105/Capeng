@@ -7,8 +7,13 @@
 
 import Foundation
 import SwiftUI
+import CoreData
+
 
 struct RecipeDetailView: View {
+
+    @Environment(\.managedObjectContext) private var viewContext
+
 
     @State private var recipeName: String = ""
     @State private var coffeeName: String = ""
@@ -20,6 +25,8 @@ struct RecipeDetailView: View {
     @State private var dripper: String = ""
 
     @State private var navigateToTimer = false
+    var recipe: Recipe? // 기존 레시피를 수정하는 경우 사용할 수 있습니다.
+
 
 
     var body: some View {
@@ -141,6 +148,9 @@ struct RecipeDetailView: View {
                     EmptyView()
                 }
             }
+            Button("Save") {
+                     addRecipe()
+                 }
         }
         .background(Color("BackGroundColor").edgesIgnoringSafeArea(.all))
         .onTapGesture {
@@ -152,6 +162,27 @@ struct RecipeDetailView: View {
             Image(systemName: "timer") // 타이머 아이콘
         })
     }
+
+    private func addRecipe() {
+        let newRecipe = Recipe(context: viewContext)
+        newRecipe.recipeName = recipeName
+        newRecipe.coffeeName = coffeeName
+        newRecipe.coffeeAmount = Double(coffeeAmount) ?? 0
+        newRecipe.waterAmount = Double(waterAmount) ?? 0
+        newRecipe.waterTemperature = Double(waterTemperature) ?? 0
+        newRecipe.roasting = roasting
+        newRecipe.grindSize = grindSize
+        newRecipe.dripper = dripper
+
+        do {
+            try viewContext.save()
+        } catch {
+            // 오류 처리
+            print(error.localizedDescription)
+        }
+    }
+
+
 }
 
 struct RecipeDetailView_Previews: PreviewProvider {

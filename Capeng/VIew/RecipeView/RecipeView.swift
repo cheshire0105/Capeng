@@ -24,11 +24,13 @@ struct RecipeView: View {
 
                 List {
                     ForEach(recipes) { recipe in
-                        NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
+                        NavigationLink(destination: RecipeDetailView(recipe: recipe)) { // 여기에 recipe 객체를 전달
                             Text(recipe.recipeName ?? "Unknown Recipe")
                         }
                     }
+                    .onDelete(perform: deleteRecipes)
                 }
+
                 .navigationBarTitle("Recipes")
                 .navigationBarItems(trailing: NavigationLink(destination: RecipeDetailView()) {
                     Image(systemName: "plus")
@@ -37,6 +39,20 @@ struct RecipeView: View {
         }
 
     }
+
+    private func deleteRecipes(offsets: IndexSet) {
+        withAnimation {
+            offsets.map { recipes[$0] }.forEach(viewContext.delete)
+
+            do {
+                try viewContext.save()
+            } catch {
+                // 오류 처리
+                print(error.localizedDescription)
+            }
+        }
+    }
+
 }
 
 

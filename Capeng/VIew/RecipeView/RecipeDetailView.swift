@@ -50,7 +50,7 @@ struct RecipeDetailView: View {
                 // 원두 이름 입력
                 CustomTextField(
                     placeholder: "Name of the coffee beans",
-                    text: $recipeName,
+                    text: $coffeeName,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
                 )
@@ -63,7 +63,7 @@ struct RecipeDetailView: View {
                 // 원두 용량 입력
                 CustomTextField(
                     placeholder: "Amount of coffee beans (g)",
-                    text: $recipeName,
+                    text: $coffeeAmount,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")), // 텍스트 색상 지정
                     keyboardType: .numberPad // 숫자 키보드 지정
@@ -80,7 +80,7 @@ struct RecipeDetailView: View {
 
                 CustomTextField(
                     placeholder: "Amount of water (ml)",
-                    text: $recipeName,
+                    text: $waterAmount,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")), // 텍스트 색상 지정
                     keyboardType: .numberPad // 숫자 키보드 지정
@@ -96,7 +96,7 @@ struct RecipeDetailView: View {
 
                 CustomTextField(
                     placeholder: "Water temperature (°C)",
-                    text: $recipeName,
+                    text: $waterTemperature,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")), // 텍스트 색상 지정
                     keyboardType: .numberPad // 숫자 키보드 지정
@@ -110,7 +110,7 @@ struct RecipeDetailView: View {
 
                 CustomTextField(
                     placeholder: "Type of roasting",
-                    text: $recipeName,
+                    text: $roasting,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
                 )
@@ -121,7 +121,7 @@ struct RecipeDetailView: View {
                 .padding(.horizontal)
                 CustomTextField(
                     placeholder: "Grind size",
-                    text: $recipeName,
+                    text: $grindSize,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
                 )
@@ -132,7 +132,7 @@ struct RecipeDetailView: View {
                 .padding(.horizontal)
                 CustomTextField(
                     placeholder: "Type of dripper",
-                    text: $recipeName,
+                    text: $dripper,
                     placeholderColor: UIColor(Color("placeholderColor")),
                     textColor: UIColor(Color("recipeTextColor")) // 텍스트 색상 지정
                 )
@@ -174,13 +174,26 @@ struct RecipeDetailView: View {
         newRecipe.grindSize = grindSize
         newRecipe.dripper = dripper
 
+        // 디버깅을 위해 저장되는 정보 출력
+        print("Saving new recipe with the following details:")
+        print("Recipe Name: \(newRecipe.recipeName ?? "N/A")")
+        print("Coffee Name: \(newRecipe.coffeeName ?? "N/A")")
+        print("Coffee Amount: \(newRecipe.coffeeAmount)")
+        print("Water Amount: \(newRecipe.waterAmount)")
+        print("Water Temperature: \(newRecipe.waterTemperature)")
+        print("Roasting: \(newRecipe.roasting ?? "N/A")")
+        print("Grind Size: \(newRecipe.grindSize ?? "N/A")")
+        print("Dripper: \(newRecipe.dripper ?? "N/A")")
+
         do {
             try viewContext.save()
+            print("Recipe saved successfully.")
         } catch {
-            // 오류 처리
-            print(error.localizedDescription)
+            // 오류 처리와 함께 오류 메시지 출력
+            print("Failed to save recipe: \(error.localizedDescription)")
         }
     }
+
 
 
 }
@@ -201,9 +214,13 @@ struct CustomTextField: UIViewRepresentable {
     var textColor: UIColor
     var keyboardType: UIKeyboardType = .default
 
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
 
     func makeUIView(context: Context) -> UITextField {
-        let textField = UITextField()
+        let textField = UITextField(frame: .zero)
+        textField.delegate = context.coordinator
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
             attributes: [NSAttributedString.Key.foregroundColor: placeholderColor]
@@ -213,11 +230,23 @@ struct CustomTextField: UIViewRepresentable {
         return textField
     }
 
-
     func updateUIView(_ uiView: UITextField, context: Context) {
         uiView.text = text
     }
+
+    class Coordinator: NSObject, UITextFieldDelegate {
+        var parent: CustomTextField
+
+        init(_ textField: CustomTextField) {
+            self.parent = textField
+        }
+
+        func textFieldDidChangeSelection(_ textField: UITextField) {
+            parent.text = textField.text ?? ""
+        }
+    }
 }
+
 
 
 
